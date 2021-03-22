@@ -98,7 +98,7 @@ class AdapterListStock(context: Context): RecyclerView.Adapter<AdapterListStock.
             holder.tvDiffPriceItem?.text = String.format("+$%1.2f (%1.2f%%)", diffPrice, diffPercent)
         } else if (diffPrice < 0){
             holder.tvDiffPriceItem?.setTextColor(Color.parseColor("#B22424"))
-            holder.tvDiffPriceItem?.text = String.format("-$%1.2f (%1.2f%%)", diffPrice, diffPercent)
+            holder.tvDiffPriceItem?.text = String.format("$%1.2f (%1.2f%%)", diffPrice, diffPercent)
         }
 
 
