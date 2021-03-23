@@ -1,5 +1,7 @@
 package com.example.stocks.repository
 
+import android.app.Application
+import android.content.Context
 import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.LiveData
@@ -71,11 +73,11 @@ class StockRepository(private val daoStock: DaoStock) {
     }
 
     fun getStockFromApi(ticker: String): Stock{
-        return stockFromApiService.getStock(ticker).execute().body()!!
+        return stockFromApiService.getStock(ticker).execute().body()!! //TODO (приложение крашится из за екзекьюте. Изменить на енкью?)
     }
 
     fun getStockPriceFromApi(ticker: String):Quote{
-        var quote = Quote(0.0,0.0,0.0,0.0, 0.0, 0)
+        var quote = Quote(0.0,0.0,0.0,0.0, 0.0, 0) // TODO(подставляю 0, а надо брать из БД)
         try {
             quote = stockFromApiService.getStockPrice(ticker).execute().body()!!
             return quote

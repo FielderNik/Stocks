@@ -1,11 +1,13 @@
 package com.example.stocks
 
+import android.app.Application
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.*
 import androidx.core.view.isVisible
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -13,11 +15,17 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.stocks.adapters.AdapterListStock
 import com.example.stocks.adapters.AdapterRecyclerViewSearchStock
 import com.example.stocks.api.Api
+import com.example.stocks.model.ListStocks
 import com.example.stocks.model.Quote
+import com.example.stocks.model.Result
 import com.example.stocks.model.Stock
 import com.example.stocks.viewmodel.StockViewModel
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
+
 
     lateinit var recyclerView: RecyclerView
     lateinit var btnRefreshPrice: ImageButton
@@ -29,6 +37,7 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
     lateinit var adapterListStock: AdapterListStock
     lateinit var adapterRecyclerViewStock: AdapterRecyclerViewSearchStock
     val apiSearch = Api()
+    val liveDataSearchStock = MutableLiveData<List<Result>>()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,8 +53,9 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
         searchView = findViewById(R.id.searchView)
         searchView.setOnQueryTextListener(this)
 
-        val liveDataSearchStock = apiSearch.searchListLiveData
-        val searchResponse = apiSearch.searchResponse
+
+//        val liveDataSearchStock = apiSearch.searchListLiveData
+/*        val searchResponse = apiSearch.searchResponse*/
 
         //stockViewModel.setDataToDatabase() TODO(не удалять)
 
@@ -73,9 +83,9 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
             Log.d("milkQuery", "query: ${liveDataSearchStock.value}")
         })
 
-        searchResponse.observe(this, Observer {
+/*        searchResponse.observe(this, Observer {
             Log.d("milkQuery", "query: ${searchResponse.value}")
-        })
+        })*/
 
         tvNavStock.setOnClickListener {
             recyclerView.adapter = adapterListStock
@@ -84,12 +94,7 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
                     adapterListStock.refreshData(it)
                 }
             })
-            tvNavStock.textSize = 24f
-            tvNavFavorite.textSize = 16f
-            tvSearch.textSize = 16f
-            tvNavStock.setTextColor(Color.parseColor("#000000"))
-            tvNavFavorite.setTextColor(Color.parseColor("#DBE2EA"))
-            tvSearch.setTextColor(Color.parseColor("#DBE2EA"))
+            switchActiveTextView(tvNavStock, tvNavFavorite, tvSearch)
         }
 
         tvNavFavorite.setOnClickListener {
@@ -99,23 +104,12 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
                     adapterListStock.refreshData(it)
                 }
             })
-            tvNavFavorite.textSize = 24f
-            tvNavStock.textSize = 16f
-            tvSearch.textSize = 16f
-            tvNavFavorite.setTextColor(Color.parseColor("#000000"))
-            tvNavStock.setTextColor(Color.parseColor("#DBE2EA"))
-            tvSearch.setTextColor(Color.parseColor("#DBE2EA"))
-
+            switchActiveTextView(tvNavFavorite, tvSearch, tvNavStock)
         }
 
         tvSearch.setOnClickListener {
             recyclerView.adapter = adapterRecyclerViewStock
-            tvSearch.textSize = 24f
-            tvNavFavorite.textSize = 16f
-            tvNavStock.textSize = 16f
-            tvSearch.setTextColor(Color.parseColor("#000000"))
-            tvNavFavorite.setTextColor(Color.parseColor("#DBE2EA"))
-            tvNavStock.setTextColor(Color.parseColor("#DBE2EA"))
+            switchActiveTextView(tvSearch, tvNavFavorite, tvNavStock)
         }
 
         btnRefreshPrice.setOnClickListener{
@@ -127,20 +121,46 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
     override fun onQueryTextSubmit(query: String?): Boolean {
         progressBar.isVisible = true
         recyclerView.adapter = adapterRecyclerViewStock
-        apiSearch.getSearchStockList(query.toString())
+        getSearchStockList(query.toString())
+        Log.d("milkSearch", "response OK")
 
-
-        tvSearch.textSize = 24f
-        tvNavFavorite.textSize = 16f
-        tvNavStock.textSize = 16f
-        tvSearch.setTextColor(Color.parseColor("#000000"))
-        tvNavFavorite.setTextColor(Color.parseColor("#DBE2EA"))
-        tvNavStock.setTextColor(Color.parseColor("#DBE2EA"))
+        switchActiveTextView(tvSearch, tvNavFavorite, tvNavStock)
         return false
     }
 
     override fun onQueryTextChange(newText: String?): Boolean {
         return false
     }
+
+    fun getSearchStockList(query: String){
+        apiSearch.listStockService.getQueryStock(query).enqueue(object : Callback<ListStocks> {
+            override fun onResponse(call: Call<ListStocks>, response: Response<ListStocks>) {
+                Log.d("milkApi", "response: ${response.headers()}")
+                liveDataSearchStock.value = response.body()?.result
+//                searchResponse.value = response.body()
+            }
+
+            override fun onFailure(call: Call<ListStocks>, t: Throwable) {
+                Log.d("milk", "err: $t")
+                Toast.makeText(this@MainActivity, "Error", Toast.LENGTH_SHORT).show()
+                progressBar.isVisible = false
+            }
+
+        })
+    }
+
+    fun switchActiveTextView(activeTv: TextView, passTvFirst: TextView, passTvSecond: TextView){
+        activeTv.textSize = 24f
+        activeTv.setTextColor(Color.parseColor("#000000"))
+
+        passTvFirst.textSize = 16f
+        passTvFirst.setTextColor(Color.parseColor("#DBE2EA"))
+
+        passTvSecond.textSize = 16f
+        passTvSecond.setTextColor(Color.parseColor("#DBE2EA"))
+    }
+
+
+
 
 }

@@ -1,8 +1,14 @@
 package com.example.stocks.api
 
+import android.app.Activity
+import android.content.Context
 import android.util.Log
+import android.widget.Toast
+import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.example.stocks.MainActivity
 import com.example.stocks.model.ListStocks
 import com.example.stocks.model.Quote
 import com.example.stocks.service.SearchStockService
@@ -19,7 +25,8 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-class Api {
+class Api() {
+
     val BASE_URL = "https://finnhub.io"
 
     val retrofit: Retrofit = Retrofit.Builder()
@@ -28,20 +35,20 @@ class Api {
         .build()
 
     val searchListLiveData = MutableLiveData<List<Result>>()
-    val searchResponse = MutableLiveData<ListStocks>()
+/*    val searchResponse = MutableLiveData<ListStocks>()*/
     val listStockService: SearchStockService = retrofit.create(SearchStockService::class.java)
 
     fun getSearchStockList(query: String){
         listStockService.getQueryStock(query).enqueue(object : Callback<ListStocks>{
             override fun onResponse(call: Call<ListStocks>, response: Response<ListStocks>) {
+                Log.d("milkApi", "response: ${response.headers()}")
                 searchListLiveData.value = response.body()?.result
-                searchResponse.value = response.body()
+//                searchResponse.value = response.body()
             }
 
             override fun onFailure(call: Call<ListStocks>, t: Throwable) {
                 Log.d("milk", "err: $t")
             }
-
         })
     }
 
