@@ -2,11 +2,14 @@ package com.example.stocks.repository
 
 import android.app.Application
 import android.content.Context
+import android.os.Looper
 import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.example.stocks.MainActivity
+import com.example.stocks.MyApplication
 
 import com.example.stocks.api.Api
 import com.example.stocks.data.DaoStock
@@ -20,8 +23,12 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.lang.Exception
+import java.util.logging.Handler
 
 class StockRepository(private val daoStock: DaoStock) {
+
+    val app: Stock = Stock("US","USD","NASDAQ NMS - GLOBAL MARKET","Technology","1980-12-12","https://finnhub.io/api/logo?symbol=AAPL",
+            2014404.0, "Apple Inc", "14089961010.0", 16788.096, "AAPL","https://www.apple.com/", true, 123.7914, 120.33)
 
     val readAllData: LiveData<List<Stock>> = daoStock.readAllData()
     val readFavoritesStock: LiveData<List<Stock>> = daoStock.getFavoritesStocks(true)
@@ -73,7 +80,14 @@ class StockRepository(private val daoStock: DaoStock) {
     }
 
     fun getStockFromApi(ticker: String): Stock{
-        return stockFromApiService.getStock(ticker).execute().body()!! //TODO (приложение крашится из за екзекьюте. Изменить на енкью?)
+        try{
+            return stockFromApiService.getStock(ticker).execute().body()!!
+        } catch (e: Exception){
+            CoroutineScope(Dispatchers.Main).launch{
+                Toast.makeText(MyApplication.cont, "Error: $e", Toast.LENGTH_LONG).show()
+            }
+            return app
+        }
     }
 
     fun getStockPriceFromApi(ticker: String):Quote{
@@ -82,6 +96,9 @@ class StockRepository(private val daoStock: DaoStock) {
             quote = stockFromApiService.getStockPrice(ticker).execute().body()!!
             return quote
         } catch (e: Exception){
+            CoroutineScope(Dispatchers.Main).launch{
+                Toast.makeText(MyApplication.cont, "Error: $e", Toast.LENGTH_LONG).show()
+            }
             return quote
         }
     }

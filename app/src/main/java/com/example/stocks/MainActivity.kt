@@ -1,6 +1,7 @@
 package com.example.stocks
 
 import android.app.Application
+import android.content.Context
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -110,6 +111,7 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
         tvSearch.setOnClickListener {
             recyclerView.adapter = adapterRecyclerViewStock
             switchActiveTextView(tvSearch, tvNavFavorite, tvNavStock)
+
         }
 
         btnRefreshPrice.setOnClickListener{
