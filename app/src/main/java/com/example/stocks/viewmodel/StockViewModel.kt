@@ -62,12 +62,12 @@ public class StockViewModel(application: Application): AndroidViewModel(applicat
     }
 
     suspend fun getStock(ticker: String): Stock{
-        return repository.getStock(ticker)
+        return repository.getStockFromDatabase(ticker)
     }
 
     fun switchFavorites(ticker: String){
         viewModelScope.launch(Dispatchers.IO){
-            val st = repository.getStock(ticker)
+            val st = repository.getStockFromDatabase(ticker)
             if (st.favorites == true){
                 repository.removeStockFromFavoritesList(ticker)
             } else {
