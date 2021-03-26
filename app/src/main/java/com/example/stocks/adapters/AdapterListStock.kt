@@ -108,7 +108,7 @@ class AdapterListStock(context: Context): RecyclerView.Adapter<AdapterListStock.
         Glide
             .with(holder.itemView)
             .load(imageAddress)
-            .placeholder(R.mipmap.ic_launcher)
+            .placeholder(R.drawable.ic_baseline_crop_original_24)
             .override(Target.SIZE_ORIGINAL, 150)
             .centerCrop()
             .into(holder.ivLogoStockItem)

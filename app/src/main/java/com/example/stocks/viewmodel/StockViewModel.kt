@@ -19,13 +19,11 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 
-public class StockViewModel(application: Application): AndroidViewModel(application){
+class StockViewModel(application: Application): AndroidViewModel(application){
 
     val readAllData: LiveData<List<Stock>>
     val favoritesStocks: LiveData<List<Stock>>
     val repository: StockRepository
-    val api = Api()
-    val stockFromApiService: StockService = api.retrofit.create(StockService::class.java)
 
     init {
         val stockDao = DataBaseStock.getDataBase(application).stockDao()
@@ -76,51 +74,6 @@ public class StockViewModel(application: Application): AndroidViewModel(applicat
         }
     }
 
-    fun checkAndAddStock(stock: Stock){
-        viewModelScope.launch (Dispatchers.IO){
-            repository.checkAndAddStock(stock)
-        }
-    }
-
-    fun setDataToDatabase() {
-
-        val constituents =
-            arrayListOf<String>("DOW", "FBHS", "CDNS", "CBOE", "AJG", "REG", "ADM", "BWA")
-
-        val retrofit = api.retrofit
-
-        val stockService = retrofit.create(StockService::class.java)
-
-        for (ticker in constituents) {
-            val stockCallback: Call<Stock> = stockService.getStock(ticker)
-            stockCallback.enqueue(object : Callback<Stock> {
-                override fun onResponse(call: Call<Stock>, response: Response<Stock>) {
-                    addStock(response.body()!!)
-                    Log.d("milk", "Stock add to list - ${response.body()}")
-                }
-
-                override fun onFailure(call: Call<Stock>, t: Throwable) {
-                    Log.d("milk", "Fail - STOCK")
-                }
-
-            })
-        }
-    }
-
-    fun getStockFromApi(ticker : String){
-        stockFromApiService.getStock(ticker).enqueue(object : Callback<Stock>{
-            override fun onResponse(call: Call<Stock>, response: Response<Stock>) {
-//                stockFromApiLiveData.value = response.body()
-                addStock(response.body()!!)
-
-            }
-
-            override fun onFailure(call: Call<Stock>, t: Throwable) {
-                Log.d("milk", "err: $t")
-            }
-
-        })
-    }
 
     fun refreshAllPrice(stocks : List<Stock>){
         viewModelScope.launch (Dispatchers.IO) {

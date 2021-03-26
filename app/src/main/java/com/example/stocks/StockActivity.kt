@@ -111,7 +111,7 @@ class StockActivity : AppCompatActivity() {
                 Glide
                     .with(this)
                     .load(logoUrl)
-                    .placeholder(R.mipmap.ic_launcher)
+                    .placeholder(R.drawable.ic_baseline_crop_original_24)
                     .override(Target.SIZE_ORIGINAL, 200)
                     .centerCrop()
                     .into(trainImage)

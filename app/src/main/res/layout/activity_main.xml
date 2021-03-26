@@ -22,12 +22,13 @@
         android:id="@+id/tvNavStocks"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="40dp"
+        android:layout_marginStart="30dp"
         android:layout_marginTop="10dp"
         android:fontFamily="@font/montserrat_bold"
         android:text="Stocks"
         android:textColor="@color/black"
         android:textSize="24sp"
+        app:layout_constraintBottom_toTopOf="@+id/guideline2"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/searchView" />
 
@@ -35,8 +36,8 @@
         android:id="@+id/tvNavFavorites"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp"
         android:fontFamily="@font/montserrat"
         android:text="Favorites"
         app:layout_constraintBaseline_toBaselineOf="@+id/tvNavStocks"
@@ -59,10 +60,11 @@
         android:id="@+id/tvSearch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp"
         android:fontFamily="@font/montserrat"
         android:text="Search"
+        android:textSize="16dp"
         app:layout_constraintBaseline_toBaselineOf="@+id/tvNavStocks"
         app:layout_constraintStart_toEndOf="@+id/tvNavFavorites"
         app:layout_constraintTop_toBottomOf="@+id/searchView" />
@@ -72,12 +74,11 @@
         style="?android:attr/progressBarStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        android:visibility="gone"
-        />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageButton
         android:id="@+id/btnRefreshPrice"
@@ -86,11 +87,18 @@
         android:backgroundTint="@color/white"
         app:layout_constraintBottom_toTopOf="@+id/recycler"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.783"
+        app:layout_constraintHorizontal_bias="0.816"
         app:layout_constraintStart_toEndOf="@+id/tvSearch"
         app:layout_constraintTop_toBottomOf="@+id/searchView"
-        app:layout_constraintVertical_bias="0.909"
+        app:layout_constraintVertical_bias="0.555"
         app:srcCompat="@drawable/ic_baseline_sync_24" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="99dp" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

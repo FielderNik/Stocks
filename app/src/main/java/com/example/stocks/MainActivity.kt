@@ -3,10 +3,12 @@ package com.example.stocks
 import android.app.Application
 import android.content.Context
 import android.graphics.Color
+import android.graphics.Typeface
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.*
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
@@ -26,8 +28,6 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
-
-
     lateinit var recyclerView: RecyclerView
     lateinit var btnRefreshPrice: ImageButton
     lateinit var tvNavStock: TextView
@@ -55,11 +55,6 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
         searchView.setOnQueryTextListener(this)
 
 
-//        val liveDataSearchStock = apiSearch.searchListLiveData
-/*        val searchResponse = apiSearch.searchResponse*/
-
-        //stockViewModel.setDataToDatabase() TODO(не удалять)
-
         adapterListStock = AdapterListStock(this)
         adapterRecyclerViewStock = AdapterRecyclerViewSearchStock(this)
 
@@ -83,10 +78,6 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
             adapterRecyclerViewStock.refreshData(it.filter { it.type != "" })
             Log.d("milkQuery", "query: ${liveDataSearchStock.value}")
         })
-
-/*        searchResponse.observe(this, Observer {
-            Log.d("milkQuery", "query: ${searchResponse.value}")
-        })*/
 
         tvNavStock.setOnClickListener {
             recyclerView.adapter = adapterListStock
@@ -114,7 +105,7 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
 
         }
 
-        btnRefreshPrice.setOnClickListener{
+        btnRefreshPrice.setOnClickListener {
             stockViewModel.refreshAllPrice(stockList)
         }
 
@@ -139,12 +130,12 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
             override fun onResponse(call: Call<ListStocks>, response: Response<ListStocks>) {
                 Log.d("milkApi", "response: ${response.headers()}")
                 liveDataSearchStock.value = response.body()?.result
-//                searchResponse.value = response.body()
+
             }
 
             override fun onFailure(call: Call<ListStocks>, t: Throwable) {
                 Log.d("milk", "err: $t")
-                Toast.makeText(this@MainActivity, "Error", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@MainActivity, "Error: Server not responding", Toast.LENGTH_SHORT).show()
                 progressBar.isVisible = false
             }
 
@@ -152,14 +143,20 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
     }
 
     fun switchActiveTextView(activeTv: TextView, passTvFirst: TextView, passTvSecond: TextView){
+        val mainFont = ResourcesCompat.getFont(this, R.font.montserrat_bold)
+        val font = ResourcesCompat.getFont(this, R.font.montserrat)
+
         activeTv.textSize = 24f
         activeTv.setTextColor(Color.parseColor("#000000"))
+        activeTv.typeface = mainFont
 
         passTvFirst.textSize = 16f
         passTvFirst.setTextColor(Color.parseColor("#DBE2EA"))
+        passTvFirst.typeface = font
 
         passTvSecond.textSize = 16f
         passTvSecond.setTextColor(Color.parseColor("#DBE2EA"))
+        passTvFirst.typeface = font
     }
 
 

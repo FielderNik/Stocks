@@ -43,11 +43,11 @@ class StockRepository(private val daoStock: DaoStock) {
             daoStock.addStock(stock)
     }
 
-    suspend fun addStockToFavoritesList(ticker: String){
+    fun addStockToFavoritesList(ticker: String){
         daoStock.switchFavorites(ticker, true)
     }
 
-    suspend fun removeStockFromFavoritesList(ticker: String){
+    fun removeStockFromFavoritesList(ticker: String){
         daoStock.switchFavorites(ticker, false)
     }
 
@@ -80,19 +80,6 @@ class StockRepository(private val daoStock: DaoStock) {
         return daoStock.getLiveDataStock(ticker)
     }
 
-    suspend fun checkAndAddStock(stock: Stock){
-
-        try {
-            val stockFromDatabase = getStockFromDatabase(stock.ticker)
-
-            Log.d("milk", "Stock is in Database $stockFromDatabase")
-        } catch (e: Exception) {
-            Log.d("milk", "Database have not this stock")
-        }
-
-
-    }
-
     fun getStockFromApi(ticker: String): Stock{
         try {
             return stockFromApiService.getStock(ticker).execute().body()!!
@@ -104,39 +91,28 @@ class StockRepository(private val daoStock: DaoStock) {
         }
     }
 
-    fun getStockPrice(ticker: String): Quote {
-        var quote = Quote(0.0, 0.0, 0.0, 0.0, 0.0, 0)
-        CoroutineScope(Dispatchers.IO).launch {
-            val stock = getStockFromDatabase(ticker)
-            if (stock != null) {
-                quote = Quote(stock.currentPrice, 0.0, 0.0, stock.openPriceOfTheDay, 0.0, 0)
-            }
-        }
-        return quote
-    }
 
     fun getStockPriceFromApi(ticker: String):Quote{
-        var quote = Quote(0.0,0.0,0.0,0.0, 0.0, 0) // TODO(подставляю 0, а надо брать из БД)
+        var quote = Quote(0.0,0.0,0.0,0.0, 0.0, 0)
 
         try {
             quote = stockFromApiService.getStockPrice(ticker).execute().body()!!
             return quote
         } catch (e: Exception){
             CoroutineScope(Dispatchers.Main).launch{
-                Toast.makeText(MyApplication.cont, "Error: $e", Toast.LENGTH_LONG).show()
+                Toast.makeText(MyApplication.cont, "Error: Server not responding", Toast.LENGTH_LONG).show()
             }
             return quote
         }
     }
 
-    suspend fun setCurrentPriceToStock(ticker: String, currentPrice: Double){
+    fun setCurrentPriceToStock(ticker: String, currentPrice: Double){
         daoStock.setCurrentPriceToStock(ticker, currentPrice)
     }
 
     fun setOpenPriceToStock(ticker: String, openPrice: Double){
         daoStock.setOpenPriceToStock(ticker, openPrice)
     }
-
 
     fun refreshAllPrice(stocks: List<Stock>){
         if (isOnline(MyApplication.cont)){
@@ -152,26 +128,6 @@ class StockRepository(private val daoStock: DaoStock) {
                 Toast.makeText(MyApplication.cont, "Server not responding", Toast.LENGTH_SHORT).show()
             }
         }
-/*        CoroutineScope(Dispatchers.IO).launch {
-            for (stock in stocks){
-
-                val stockFromDatabase = getStockFromDatabase(stock.ticker)
-                var quote: Quote
-
-                try {
-                    quote = stockFromApiService.getStockPrice(stock.ticker).execute().body()!!
-                } catch (e: Exception){
-                    quote = Quote(stockFromDatabase.currentPrice, 0.0, 0.0, stockFromDatabase.openPriceOfTheDay, 0.0, 0)
-                    CoroutineScope(Dispatchers.Main).launch{
-                        Toast.makeText(MyApplication.cont, "server not responding", Toast.LENGTH_SHORT).show()
-                    }
-                }
-
-                daoStock.setCurrentPriceToStock(stock.ticker, quote.c)
-                daoStock.setOpenPriceToStock(stock.ticker, quote.o)
-            }
-
-        }*/
     }
 
     @SuppressLint("ServiceCast")
