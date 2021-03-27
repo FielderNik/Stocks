@@ -1,9 +1,8 @@
 package com.example.stocks
 
-import android.app.Application
-import android.content.Context
+
+import android.annotation.SuppressLint
 import android.graphics.Color
-import android.graphics.Typeface
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -19,32 +18,42 @@ import com.example.stocks.adapters.AdapterListStock
 import com.example.stocks.adapters.AdapterRecyclerViewSearchStock
 import com.example.stocks.api.Api
 import com.example.stocks.model.ListStocks
-import com.example.stocks.model.Quote
 import com.example.stocks.model.Result
-import com.example.stocks.model.Stock
 import com.example.stocks.viewmodel.StockViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
+
+    companion object
+    {
+        @SuppressLint("StaticFieldLeak")
+        lateinit var progressBar: ProgressBar
+    }
     lateinit var recyclerView: RecyclerView
     lateinit var btnRefreshPrice: ImageButton
     lateinit var tvNavStock: TextView
     lateinit var tvNavFavorite: TextView
     lateinit var tvSearch: TextView
     lateinit var searchView: SearchView
-    lateinit var progressBar: ProgressBar
+
     lateinit var adapterListStock: AdapterListStock
+    lateinit var adapterFavoriteListStock: AdapterListStock
     lateinit var adapterRecyclerViewStock: AdapterRecyclerViewSearchStock
-    val apiSearch = Api()
     val liveDataSearchStock = MutableLiveData<List<Result>>()
+    lateinit var stockViewModel: StockViewModel
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        val stockViewModel = ViewModelProvider(this).get(StockViewModel::class.java)
+
+        stockViewModel = ViewModelProvider(this).get(StockViewModel::class.java)
+
         btnRefreshPrice = findViewById(R.id.btnRefreshPrice)
         tvNavStock = findViewById(R.id.tvNavStocks)
         tvNavFavorite = findViewById(R.id.tvNavFavorites)
@@ -54,22 +63,18 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
         searchView = findViewById(R.id.searchView)
         searchView.setOnQueryTextListener(this)
 
-
         adapterListStock = AdapterListStock(this)
+        adapterFavoriteListStock = AdapterListStock(this)
         adapterRecyclerViewStock = AdapterRecyclerViewSearchStock(this)
 
         recyclerView = findViewById(R.id.recycler)
-
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = adapterListStock
 
-        var stockList = emptyList<Stock>()
 
         stockViewModel.readAllData.observe(this, Observer {
             it?.let {
                 adapterListStock.refreshData(it)
-                stockList = it
-                Log.d("milkMain", "stockList: $stockList")
             }
         })
 
@@ -86,16 +91,18 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
                     adapterListStock.refreshData(it)
                 }
             })
+            recyclerView.adapter = adapterListStock
             switchActiveTextView(tvNavStock, tvNavFavorite, tvSearch)
         }
 
         tvNavFavorite.setOnClickListener {
-            recyclerView.adapter = adapterListStock
+
             stockViewModel.favoritesStocks.observe(this, Observer {
                 it?.let {
-                    adapterListStock.refreshData(it)
+                    adapterFavoriteListStock.refreshData(it)
                 }
             })
+            recyclerView.adapter = adapterFavoriteListStock
             switchActiveTextView(tvNavFavorite, tvSearch, tvNavStock)
         }
 
@@ -106,15 +113,23 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
         }
 
         btnRefreshPrice.setOnClickListener {
-            stockViewModel.refreshAllPrice(stockList)
+            CoroutineScope(Dispatchers.IO).launch {
+                val listStock = stockViewModel.getStockListFromDatabase()
+                stockViewModel.refreshAllPrice(listStock)
+                Log.d("milkMain", "stockList when click refresh: ${listStock?.size}")
+            }
         }
-
     }
 
     override fun onQueryTextSubmit(query: String?): Boolean {
         progressBar.isVisible = true
         recyclerView.adapter = adapterRecyclerViewStock
-        getSearchStockList(query.toString())
+        stockViewModel.getSearchStockList(query!!).observe(this, Observer {
+            it?.let {
+                adapterRecyclerViewStock.refreshData(it)
+                progressBar.isVisible = false
+            }
+        })
         Log.d("milkSearch", "response OK")
 
         switchActiveTextView(tvSearch, tvNavFavorite, tvNavStock)
@@ -125,22 +140,6 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
         return false
     }
 
-    fun getSearchStockList(query: String){
-        apiSearch.listStockService.getQueryStock(query).enqueue(object : Callback<ListStocks> {
-            override fun onResponse(call: Call<ListStocks>, response: Response<ListStocks>) {
-                Log.d("milkApi", "response: ${response.headers()}")
-                liveDataSearchStock.value = response.body()?.result
-
-            }
-
-            override fun onFailure(call: Call<ListStocks>, t: Throwable) {
-                Log.d("milk", "err: $t")
-                Toast.makeText(this@MainActivity, "Error: Server not responding", Toast.LENGTH_SHORT).show()
-                progressBar.isVisible = false
-            }
-
-        })
-    }
 
     fun switchActiveTextView(activeTv: TextView, passTvFirst: TextView, passTvSecond: TextView){
         val mainFont = ResourcesCompat.getFont(this, R.font.montserrat_bold)
@@ -158,8 +157,5 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
         passTvSecond.setTextColor(Color.parseColor("#DBE2EA"))
         passTvFirst.typeface = font
     }
-
-
-
 
 }

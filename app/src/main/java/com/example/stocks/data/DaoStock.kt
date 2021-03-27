@@ -37,4 +37,7 @@ interface DaoStock {
 
     @Query("UPDATE table_stock SET openPriceOfTheDay = :openPrice WHERE ticker = :ticker")
     fun setOpenPriceToStock(ticker: String, openPrice: Double)
+
+    @Query("SELECT * FROM table_stock")
+    suspend fun getStockListFromDatabase(): List<Stock>
 }

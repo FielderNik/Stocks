@@ -49,8 +49,6 @@ class AdapterListStock(context: Context): RecyclerView.Adapter<AdapterListStock.
             tvDiffPriceItem = view.findViewById(R.id.tvDiffPriceItem)
             ivFavoriteItem = view.findViewById(R.id.ivFavoriteItem)
 
-
-
             view.setOnClickListener{view ->
                 val intent = Intent(view.context, StockActivity::class.java)
                 intent.putExtra("ticker", tvTickerItem?.text)
@@ -102,8 +100,6 @@ class AdapterListStock(context: Context): RecyclerView.Adapter<AdapterListStock.
         }
 
 
-
-
         val imageAddress = stocks[position].logo.toString()
         Glide
             .with(holder.itemView)
@@ -121,10 +117,5 @@ class AdapterListStock(context: Context): RecyclerView.Adapter<AdapterListStock.
         notifyDataSetChanged()
     }
 
-/*    fun refreshDataQuotes(_quotes: List<Quote>){
-        Thread.sleep(10000)
-        this.quotes = _quotes
-        notifyDataSetChanged()
-    }*/
 
 }

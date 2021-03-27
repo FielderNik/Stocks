@@ -8,6 +8,7 @@ import android.net.NetworkCapabilities
 import android.os.Looper
 import android.util.Log
 import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -16,8 +17,10 @@ import com.example.stocks.MyApplication
 
 import com.example.stocks.api.Api
 import com.example.stocks.data.DaoStock
+import com.example.stocks.model.ListStocks
 import com.example.stocks.model.Quote
 import com.example.stocks.model.Stock
+import com.example.stocks.model.Result
 import com.example.stocks.service.StockService
 import kotlinx.coroutines.*
 import retrofit2.Call
@@ -151,6 +154,27 @@ class StockRepository(private val daoStock: DaoStock) {
             }
         }
         return false
+    }
+
+    suspend fun getStockListFromDatabase(): List<Stock>{
+        return daoStock.getStockListFromDatabase()
+    }
+
+    val searchStockListLiveData = MutableLiveData<List<Result>>()
+    fun getSearchStockList(query: String){
+        api.listStockService.getQueryStock(query).enqueue(object : Callback<ListStocks> {
+            override fun onResponse(call: Call<ListStocks>, response: Response<ListStocks>) {
+                Log.d("milkApi", "response: ${response.headers()}")
+                searchStockListLiveData.value = response.body()?.result
+            }
+
+            override fun onFailure(call: Call<ListStocks>, t: Throwable) {
+                Log.d("milk", "err: $t")
+                Toast.makeText(MyApplication.cont, "Error: Server not responding", Toast.LENGTH_SHORT).show()
+                MainActivity.progressBar.isVisible = false
+            }
+
+        })
     }
 
 
