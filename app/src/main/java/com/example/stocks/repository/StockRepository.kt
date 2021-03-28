@@ -1,20 +1,16 @@
 package com.example.stocks.repository
 
 import android.annotation.SuppressLint
-import android.app.Application
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
-import android.os.Looper
 import android.util.Log
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.example.stocks.MainActivity
 import com.example.stocks.MyApplication
-
 import com.example.stocks.api.Api
 import com.example.stocks.data.DaoStock
 import com.example.stocks.model.ListStocks
@@ -26,10 +22,8 @@ import kotlinx.coroutines.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import java.lang.Exception
-import java.util.logging.Handler
+
 
 class StockRepository(private val daoStock: DaoStock) {
 

@@ -6,10 +6,10 @@ import android.content.Context
 
 open class MyApplication: Application() {
 
-    companion object{
+    companion object
+    {
         @SuppressLint("StaticFieldLeak")
         lateinit var cont: Context
-
     }
 
 

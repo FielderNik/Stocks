@@ -4,26 +4,16 @@ package com.example.stocks.adapters
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import androidx.core.content.ContextCompat
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelStore
-import androidx.lifecycle.ViewModelStoreOwner
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.Target
 import com.example.stocks.R
 import com.example.stocks.StockActivity
-import com.example.stocks.api.Api
-import com.example.stocks.model.Quote
 import com.example.stocks.model.Stock
-import com.example.stocks.viewmodel.StockViewModel
-import kotlin.coroutines.coroutineContext
 
 
 class AdapterListStock(context: Context): RecyclerView.Adapter<AdapterListStock.ViewHolder>(){
@@ -53,7 +43,7 @@ class AdapterListStock(context: Context): RecyclerView.Adapter<AdapterListStock.
                 val intent = Intent(view.context, StockActivity::class.java)
                 intent.putExtra("ticker", tvTickerItem?.text)
                 view.context.startActivity(intent)
-//                Toast.makeText(view.context, "ticker: ${tickerTv?.text}", Toast.LENGTH_SHORT).show()
+
             }
         }
     }
@@ -66,7 +56,6 @@ class AdapterListStock(context: Context): RecyclerView.Adapter<AdapterListStock.
         if (position % 2 == 0){
             holder.itemView.setBackgroundColor(Color.parseColor("#FFFFFF"))
         } else {
-//            holder.itemView.setBackgroundColor(Color.parseColor("#DBE2EA"))
             holder.itemView.setBackgroundResource(R.drawable.layout_bg)
         }
 
