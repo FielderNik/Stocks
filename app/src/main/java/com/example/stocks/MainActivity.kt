@@ -155,7 +155,7 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
 
         passTvSecond.textSize = 16f
         passTvSecond.setTextColor(Color.parseColor("#DBE2EA"))
-        passTvFirst.typeface = font
+        passTvSecond.typeface = font
     }
 
 }

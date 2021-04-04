@@ -40,4 +40,7 @@ interface DaoStock {
 
     @Query("SELECT * FROM table_stock")
     suspend fun getStockListFromDatabase(): List<Stock>
+
+    @Query("DELETE FROM table_stock WHERE ticker = :ticker")
+    suspend fun deleteElementFromDB(ticker: String)
 }

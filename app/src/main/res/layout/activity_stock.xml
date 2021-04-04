@@ -49,137 +49,6 @@
         app:layout_constraintStart_toEndOf="@+id/tvCompanyName_Card"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
-        android:id="@+id/ivTrainGlide"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvCompanyName_Card"
-        tools:srcCompat="@tools:sample/avatars" />
-
-    <TableLayout
-        android:id="@+id/tableLayout"
-        android:layout_width="match_parent"
-        android:layout_height="250dp"
-        android:padding="10dp"
-        app:layout_constraintBottom_toTopOf="@+id/btnBuy"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvCurrentPrice_Card">
-
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:padding="5dp">
-
-            <TextView
-                android:layout_width="140dp"
-                android:layout_height="wrap_content"
-                android:textColor="#000000"
-                android:text="Country"
-                android:textStyle="bold"/>
-
-            <TextView
-                android:id="@+id/tvCountry"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Country" />
-        </TableRow>
-
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:padding="5dp">
-
-            <TextView
-                android:textColor="#000000"
-                android:layout_height="wrap_content"
-                android:text="Exchange"
-                android:textStyle="bold"/>
-
-            <TextView
-                android:id="@+id/tvExchange"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Exchange" />
-        </TableRow>
-
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:padding="5dp">
-
-            <TextView
-                android:textColor="#000000"
-                android:layout_height="wrap_content"
-                android:text="Industry"
-                android:textStyle="bold"/>
-
-            <TextView
-                android:id="@+id/tvIndustry"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Industry" />
-        </TableRow>
-
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:padding="5dp">
-
-            <TextView
-                android:textColor="#000000"
-                android:layout_height="wrap_content"
-                android:text="IPO"
-                android:textStyle="bold"/>
-
-            <TextView
-                android:id="@+id/tvIpo"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="IPO" />
-        </TableRow>
-
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:padding="5dp">
-
-            <TextView
-                android:textColor="#000000"
-                android:layout_height="wrap_content"
-                android:text="Capitalization"
-                android:textStyle="bold"/>
-
-            <TextView
-                android:id="@+id/tvCapitalization"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Capitalization" />
-        </TableRow>
-
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:padding="5dp">
-
-            <TextView
-                android:textColor="#000000"
-                android:layout_height="wrap_content"
-                android:text="Oustanding shares"
-                android:textStyle="bold"/>
-
-            <TextView
-                android:id="@+id/tvOutstandingShare"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Oustanding shares" />
-        </TableRow>
-    </TableLayout>
 
     <ImageButton
         android:id="@+id/btnBack"
@@ -200,8 +69,8 @@
         android:layout_marginBottom="24dp"
         android:backgroundTint="#000000"
         android:text="Buy for"
-        app:cornerRadius="16dp"
         android:textAllCaps="false"
+        app:cornerRadius="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -211,7 +80,7 @@
         android:id="@+id/tvCurrentPrice_Card"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="16dp"
         android:fontFamily="@font/montserrat_bold"
         android:text="0.00"
         android:textColor="#000000"
@@ -219,7 +88,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ivTrainGlide" />
+        app:layout_constraintTop_toBottomOf="@+id/tvCompanyName_Card" />
 
     <TextView
         android:id="@+id/tvDiffPrice_Card"
@@ -234,6 +103,75 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvCurrentPrice_Card"
         app:layout_constraintVertical_bias="0.0" />
+
+    <LinearLayout
+        android:id="@+id/linearLayoutMenu"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="24dp"
+        android:gravity="bottom"
+        android:orientation="horizontal"
+        android:paddingHorizontal="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvDiffPrice_Card">
+
+        <TextView
+            android:id="@+id/tvSummary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="16dp"
+            android:fontFamily="@font/montserrat"
+            android:text="Summary"
+
+            />
+
+        <TextView
+            android:id="@+id/tvChart"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="16dp"
+            android:fontFamily="@font/montserrat"
+            android:text="Chart"
+
+            />
+
+        <TextView
+            android:id="@+id/tvNews"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/montserrat"
+            android:text="News" />
+
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/flFragments"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/btnBuy"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayoutMenu">
+
+    </FrameLayout>
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="?android:attr/listDivider"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayoutMenu"
+        app:layout_constraintBottom_toTopOf="@+id/flFragments"
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

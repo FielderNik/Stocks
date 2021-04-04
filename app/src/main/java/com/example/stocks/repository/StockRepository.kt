@@ -13,10 +13,7 @@ import com.example.stocks.MainActivity
 import com.example.stocks.MyApplication
 import com.example.stocks.api.Api
 import com.example.stocks.data.DaoStock
-import com.example.stocks.model.ListStocks
-import com.example.stocks.model.Quote
-import com.example.stocks.model.Stock
-import com.example.stocks.model.Result
+import com.example.stocks.model.*
 import com.example.stocks.service.StockService
 import kotlinx.coroutines.*
 import retrofit2.Call
@@ -88,7 +85,6 @@ class StockRepository(private val daoStock: DaoStock) {
         }
     }
 
-
     fun getStockPriceFromApi(ticker: String):Quote{
         var quote = Quote(0.0,0.0,0.0,0.0, 0.0, 0)
 
@@ -115,9 +111,14 @@ class StockRepository(private val daoStock: DaoStock) {
         if (isOnline(MyApplication.cont)){
             CoroutineScope(Dispatchers.IO).launch {
                 for (stock in stocks){
-                    val quote: Quote = stockFromApiService.getStockPrice(stock.ticker).execute().body()!!
-                    daoStock.setCurrentPriceToStock(stock.ticker, quote.c)
-                    daoStock.setOpenPriceToStock(stock.ticker, quote.o)
+                    try{
+                        val quote: Quote = stockFromApiService.getStockPrice(stock.ticker).execute().body()!!
+                        daoStock.setCurrentPriceToStock(stock.ticker, quote.c)
+                        daoStock.setOpenPriceToStock(stock.ticker, quote.o)
+                    } catch (e: Exception) {
+                        Log.d("milk repository", "exception: $e")
+                    }
+
                 }
             }
         } else {
@@ -169,6 +170,40 @@ class StockRepository(private val daoStock: DaoStock) {
             }
 
         })
+    }
+
+    val liveDataToChartStock = MutableLiveData<ChartStock>()
+    fun getLiveDataToChartStockFromApi(symbol: String, resolution: String, from: String, to: String){
+        api.listStockService.getChart(symbol, resolution, from, to).enqueue(object : Callback<ChartStock>{
+            override fun onResponse(call: Call<ChartStock>, response: Response<ChartStock>) {
+                liveDataToChartStock.value = response.body()
+            }
+
+            override fun onFailure(call: Call<ChartStock>, t: Throwable) {
+                Toast.makeText(MyApplication.cont, "Error: Server not responding", Toast.LENGTH_SHORT).show()
+            }
+
+        })
+    }
+
+
+    val liveDataCompanyNewsList = MutableLiveData<CompanyNews>()
+    fun getCompanyNews(ticker: String, from: String, to: String){
+        api.listStockService.getCompanyNews(ticker, from, to).enqueue(object : Callback<CompanyNews>{
+            override fun onResponse(call: Call<CompanyNews>, response: Response<CompanyNews>) {
+                liveDataCompanyNewsList.value = response.body()
+            }
+
+            override fun onFailure(call: Call<CompanyNews>, t: Throwable) {
+                Log.d("milk", "err: $t")
+                Toast.makeText(MyApplication.cont, "Error: Server not responding", Toast.LENGTH_SHORT).show()
+            }
+
+        })
+    }
+
+    suspend fun deleteElementFromDB(ticker: String){
+        daoStock.deleteElementFromDB(ticker)
     }
 
 

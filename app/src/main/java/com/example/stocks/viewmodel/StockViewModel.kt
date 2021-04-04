@@ -3,6 +3,8 @@ package com.example.stocks.viewmodel
 import android.app.Application
 import androidx.lifecycle.*
 import com.example.stocks.data.DataBaseStock
+import com.example.stocks.model.ChartStock
+import com.example.stocks.model.CompanyNews
 import com.example.stocks.model.Stock
 import com.example.stocks.model.Result
 import com.example.stocks.repository.StockRepository
@@ -21,6 +23,7 @@ class StockViewModel(application: Application): AndroidViewModel(application){
         repository = StockRepository(stockDao)
         readAllData = repository.readAllData
         favoritesStocks = repository.readFavoritesStock
+
     }
 
     fun getLiveDataStock(ticker: String) : LiveData<Stock>{
@@ -51,6 +54,26 @@ class StockViewModel(application: Application): AndroidViewModel(application){
     fun getSearchStockList(query: String): LiveData<List<Result>>{
         repository.getSearchStockList(query)
         return repository.searchStockListLiveData
+    }
+
+    fun getLiveDataToChartStock(symbol: String, resolution: String, from: String, to: String): LiveData<ChartStock>{
+        repository.getLiveDataToChartStockFromApi(symbol, resolution, from, to)
+        return repository.liveDataToChartStock
+    }
+
+    fun getLiveDataCompanyNewsList(ticker: String, from: String, to: String): LiveData<CompanyNews>{
+        repository.getCompanyNews(ticker, from, to)
+        return repository.liveDataCompanyNewsList
+    }
+
+
+    //service function
+
+    fun deleteElementFromDB(ticker: String){
+        viewModelScope.launch (Dispatchers.IO) {
+            repository.deleteElementFromDB(ticker)
+        }
+
     }
 
 }

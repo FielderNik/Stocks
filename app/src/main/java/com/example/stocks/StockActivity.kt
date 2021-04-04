@@ -1,15 +1,20 @@
 package com.example.stocks
 
 import android.graphics.Color
+import android.graphics.Typeface
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.*
+import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.Target
+import com.example.stocks.fragments.FragmentChartStock
+import com.example.stocks.fragments.FragmentCompanyNews
+import com.example.stocks.fragments.FragmentSummaryStock
 
 import com.example.stocks.viewmodel.StockViewModel
 
@@ -19,35 +24,64 @@ class StockActivity : AppCompatActivity() {
     lateinit var tvCompanyName: TextView
     lateinit var tvDescription: TextView
     lateinit var ivFavorite: ImageView
-    lateinit var trainImage: ImageView
+
     lateinit var btnBack: ImageButton
     lateinit var btnBuy: Button
     lateinit var tvCurrentPrice_Card: TextView
     lateinit var tvDiffPrice_Card: TextView
 
-    //stock info
-    lateinit var tvCountry: TextView
-    lateinit var tvExchange: TextView
-    lateinit var tvIndustry: TextView
-    lateinit var tvIpo: TextView
-    lateinit var tvCapitalization: TextView
-    lateinit var tvOutstandingShare: TextView
-
+    lateinit var tvSummaryStock: TextView
+    lateinit var tvChartStock: TextView
+    lateinit var tvNewsStock: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_stock)
 
-        tvCountry = findViewById(R.id.tvCountry)
-        tvExchange = findViewById(R.id.tvExchange)
-        tvIndustry = findViewById(R.id.tvIndustry)
-        tvIpo = findViewById(R.id.tvIpo)
-        tvCapitalization = findViewById(R.id.tvCapitalization)
-        tvOutstandingShare = findViewById(R.id.tvOutstandingShare)
+        val stockViewModel = ViewModelProvider(this).get(StockViewModel::class.java)
+        val tickerFromList = intent.extras?.get("ticker").toString()
+
         btnBack = findViewById(R.id.btnBack)
         btnBuy = findViewById(R.id.btnBuy)
         tvCurrentPrice_Card = findViewById(R.id.tvCurrentPrice_Card)
         tvDiffPrice_Card = findViewById(R.id.tvDiffPrice_Card)
+        tvSummaryStock = findViewById(R.id.tvSummary)
+        tvChartStock = findViewById(R.id.tvChart)
+        tvNewsStock = findViewById(R.id.tvNews)
+
+        val fragmentSummaryStock = FragmentSummaryStock(stockViewModel, tickerFromList)
+        val fragmentChartStock = FragmentChartStock(stockViewModel, tickerFromList)
+        val fragmentCompanyNews = FragmentCompanyNews(stockViewModel, tickerFromList)
+
+        supportFragmentManager.beginTransaction().apply {
+            replace(R.id.flFragments, fragmentSummaryStock)
+            commit()
+            switchActiveTextView(tvSummaryStock, tvChartStock, tvNewsStock)
+        }
+
+        tvSummaryStock.setOnClickListener {
+            supportFragmentManager.beginTransaction().apply {
+                replace(R.id.flFragments, fragmentSummaryStock)
+                commit()
+                switchActiveTextView(tvSummaryStock, tvChartStock, tvNewsStock)
+            }
+        }
+
+        tvChartStock.setOnClickListener {
+            supportFragmentManager.beginTransaction().apply {
+                replace(R.id.flFragments, fragmentChartStock)
+                commit()
+                switchActiveTextView(tvChartStock, tvSummaryStock, tvNewsStock)
+            }
+        }
+
+        tvNewsStock.setOnClickListener {
+            supportFragmentManager.beginTransaction().apply {
+                replace(R.id.flFragments, fragmentCompanyNews)
+                commit()
+                switchActiveTextView(tvNewsStock, tvSummaryStock, tvChartStock)
+            }
+        }
 
         btnBack.setOnClickListener{
             finish()
@@ -61,10 +95,6 @@ class StockActivity : AppCompatActivity() {
 //        tvDescription = findViewById(R.id.tvDescription_Card)
 
         ivFavorite = findViewById(R.id.ivFavorite_Card)
-        trainImage = findViewById(R.id.ivTrainGlide)
-
-        val stockViewModel = ViewModelProvider(this).get(StockViewModel::class.java)
-        val tickerFromList = intent.extras?.get("ticker").toString()
 
         stockViewModel.getLiveDataStock(tickerFromList).observe(this, Observer {
             Log.d("stockActivity", "searchQuery: ${it?.ticker}")
@@ -91,12 +121,6 @@ class StockActivity : AppCompatActivity() {
                     tvDiffPrice_Card.text = String.format("$%1.2f (%1.2f%%)", diffPrice, percent)
                 }
 
-                tvCountry.text = it.country
-                tvExchange.text = it.exchange
-                tvIndustry.text = it.finnhubIndustry
-                tvIpo.text = it.ipo
-                tvCapitalization.text = it.marketCapitalization.toString()
-                tvOutstandingShare.text = it.shareOutstanding.toString()
 
                 if (it.favorites == true){
                     ivFavorite.setImageResource(R.drawable.star_on)
@@ -106,15 +130,7 @@ class StockActivity : AppCompatActivity() {
 
                 btnBuy.text = String.format("Buy for $%1.2f", currentPrice)
 
-                val logoUrl = it.logo
 
-                Glide
-                    .with(this)
-                    .load(logoUrl)
-                    .placeholder(R.drawable.ic_baseline_crop_original_24)
-                    .override(Target.SIZE_ORIGINAL, 200)
-                    .centerCrop()
-                    .into(trainImage)
             }
         })
 
@@ -122,5 +138,23 @@ class StockActivity : AppCompatActivity() {
             stockViewModel.switchFavorites(tickerFromList)
         }
 
+    }
+
+
+    fun switchActiveTextView(activeTv: TextView, passTvFirst: TextView, passTvSecond: TextView){
+        val mainFont = ResourcesCompat.getFont(this, R.font.montserrat_bold)
+        val font = ResourcesCompat.getFont(this, R.font.montserrat)
+
+        activeTv.textSize = 18f
+        activeTv.setTextColor(Color.parseColor("#000000"))
+        activeTv.typeface = mainFont
+
+        passTvFirst.textSize = 14f
+        passTvFirst.setTextColor(Color.parseColor("#DBE2EA"))
+        passTvFirst.typeface = font
+
+        passTvSecond.textSize = 14f
+        passTvSecond.setTextColor(Color.parseColor("#DBE2EA"))
+        passTvSecond.typeface = font
     }
 }

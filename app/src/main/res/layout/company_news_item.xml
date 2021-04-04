@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:layout_margin="5dp"
+    android:padding="10dp"
+    android:background="@drawable/layout_bg"
+    >
+
+    <TextView
+        android:id="@+id/tvNewsHeader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Header"
+        android:textSize="20dp"
+        android:textStyle="bold"
+        android:layout_gravity="center"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        />
+
+    <TextView
+        android:id="@+id/tvNewsSummary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Intel's latest desktop chip is underwhelming; this has been the story of Intel chips in the past few years and continues to be a headwind for the company."
+        />
+
+    <TextView
+        android:id="@+id/tvNewsDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="01.01.1970"
+        android:layout_marginTop="5dp"
+        android:layout_gravity="right"
+        />
+
+</LinearLayout>
